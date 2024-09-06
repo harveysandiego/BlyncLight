@@ -1,4 +1,4 @@
-README
+# README
 
 Command line utility for controlling Embrava BlyncLights
 
