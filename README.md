@@ -2,6 +2,11 @@
 
 Command line utility for controlling Embrava BlyncLights
 
+## Build
+`make all`
+
+## Usage
+
 ```
 Usage: ./BlyncLight <device_index|all> <command> [options]
 Commands:
