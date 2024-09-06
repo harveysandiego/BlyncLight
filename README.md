@@ -1,6 +1,6 @@
 # README
 
-Command line utility for controlling Embrava BlyncLights
+Command line utility for controlling Embrava BlyncLights on Linux.
 
 ## Build
 `make all`
