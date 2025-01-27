@@ -58,42 +58,48 @@ const char* get_device_type_name(unsigned char device_type) {
 }
 
 // Function to set a color for a specific device
-void set_light_color(const char *color, int device_index) {
+bool set_light_color(const char *color, int device_index) {
     if (strcmp(color, "red") == 0) {
-        TurnOnRedLight(device_index);
+        return TurnOnRedLight(device_index);
     } else if (strcmp(color, "green") == 0) {
-        TurnOnGreenLight(device_index);
+        return TurnOnGreenLight(device_index);
     } else if (strcmp(color, "blue") == 0) {
-        TurnOnBlueLight(device_index);
+        return TurnOnBlueLight(device_index);
     } else if (strcmp(color, "cyan") == 0) {
-        TurnOnCyanLight(device_index);
+        return TurnOnCyanLight(device_index);
     } else if (strcmp(color, "magenta") == 0) {
-        TurnOnMagentaLight(device_index);
+        return TurnOnMagentaLight(device_index);
     } else if (strcmp(color, "yellow") == 0) {
-        TurnOnYellowLight(device_index);
+        return TurnOnYellowLight(device_index);
     } else if (strcmp(color, "white") == 0) {
-        TurnOnWhiteLight(device_index);
+        return TurnOnWhiteLight(device_index);
     } else if (strcmp(color, "orange") == 0) {
-        TurnOnOrangeLight(device_index);
+        return TurnOnOrangeLight(device_index);
     } else {
         printf("Unknown color: %s\n", color);
+        return false;
     }
 }
 
 // Function to flash the light at a specific speed
-void flash_light(int device_index, const char *speed) {
+bool flash_light(int device_index, const char *speed) {
     if (strcmp(speed, "low") == 0) {
-        SelectLightFlashSpeed(device_index, 0x01);
+        return SelectLightFlashSpeed(device_index, 0x01);
     } else if (strcmp(speed, "medium") == 0) {
-        SelectLightFlashSpeed(device_index, 0x02);
+        return SelectLightFlashSpeed(device_index, 0x02);
     } else if (strcmp(speed, "high") == 0) {
-        SelectLightFlashSpeed(device_index, 0x03);
+        return SelectLightFlashSpeed(device_index, 0x03);
     } else if (strcmp(speed, "pulse") == 0) {
-        SelectLightFlashSpeed(device_index, 0x04);
+        return SelectLightFlashSpeed(device_index, 0x04);
     } else {
         printf("Unknown flash speed: %s\n", speed);
+        return false;
     }
-    StartLightFlash(device_index);
+    return StartLightFlash(device_index);
+}
+
+void log_succeeded(bool succeeded) {
+    printf("Command %s\n", succeeded ? "succeeded" : "failed");
 }
 
 int main(int argc, char *argv[]) {
@@ -132,7 +138,7 @@ int main(int argc, char *argv[]) {
     if (strcmp(argv[1], "all") == 0) {
         if (strcmp(argv[2], "reset") == 0) {
             for (int i = 0; i < num_devices; i++) {
-                ResetLight(i);
+                log_succeeded(ResetLight(i));
             }
         } else if (strcmp(argv[2], "flash") == 0) {
             if (argc != 4) {
@@ -141,19 +147,19 @@ int main(int argc, char *argv[]) {
                 return 1;
             }
             for (int i = 0; i < num_devices; i++) {
-                flash_light(i, argv[3]);
+                log_succeeded(flash_light(i, argv[3]));
             }
         } else if (strcmp(argv[2], "stop_flash") == 0) {
             for (int i = 0; i < num_devices; i++) {
-                StopLightFlash(i);
+                log_succeeded(StopLightFlash(i));
             }
         } else if (strcmp(argv[2], "dim") == 0) {
             for (int i = 0; i < num_devices; i++) {
-				SetLightDim(i);
+				log_succeeded(SetLightDim(i));
             }
         } else if (strcmp(argv[2], "clear_dim") == 0) {
             for (int i = 0; i < num_devices; i++) {
-                ClearLightDim(i);
+                log_succeeded(ClearLightDim(i));
             }
         } else if (strcmp(argv[2], "music") == 0) {
             if (argc != 4) {
@@ -163,20 +169,21 @@ int main(int argc, char *argv[]) {
             }
             int music_number = atoi(argv[3]);
             for (int i = 0; i < num_devices; i++) {
-                SelectMusicToPlay(i, (byte)music_number);
-                StartMusicPlay(i);
+                bool cmdA = SelectMusicToPlay(i, (byte)music_number);
+                bool cmdB = StartMusicPlay(i);
+                log_succeeded(cmdA && cmdB);
             }
         } else if (strcmp(argv[2], "stop_music") == 0) {
             for (int i = 0; i < num_devices; i++) {
-                StopMusicPlay(i);
+                log_succeeded(StopMusicPlay(i));
             }
         } else if (strcmp(argv[2], "repeat") == 0) {
             for (int i = 0; i < num_devices; i++) {
-                SetMusicRepeat(i);
+                log_succeeded(SetMusicRepeat(i));
             }
         } else if (strcmp(argv[2], "clear_repeat") == 0) {
             for (int i = 0; i < num_devices; i++) {
-                ClearMusicRepeat(i);
+                log_succeeded(ClearMusicRepeat(i));
             }
         } else if (strcmp(argv[2], "volume") == 0) {
             if (argc != 4) {
@@ -186,15 +193,15 @@ int main(int argc, char *argv[]) {
             }
             int volume_level = atoi(argv[3]);
             for (int i = 0; i < num_devices; i++) {
-                SetMusicVolume(i, (byte)volume_level);
+                log_succeeded(SetMusicVolume(i, (byte)volume_level));
             }
         } else if (strcmp(argv[2], "mute") == 0) {
             for (int i = 0; i < num_devices; i++) {
-                SetVolumeMute(i);
+                log_succeeded(SetVolumeMute(i));
             }
         } else if (strcmp(argv[2], "unmute") == 0) {
             for (int i = 0; i < num_devices; i++) {
-                ClearVolumeMute(i);
+                log_succeeded(ClearVolumeMute(i));
             }
         } else if (strcmp(argv[2], "info") == 0) {
             for (int i = 0; i < num_devices; i++) {
@@ -213,12 +220,12 @@ int main(int argc, char *argv[]) {
                 int red = atoi(argv[3]);
                 int green = atoi(argv[4]);
                 int blue = atoi(argv[5]);
-                TurnOnRGBLights(i, (byte)red, (byte)green, (byte)blue);
+                log_succeeded(TurnOnRGBLights(i, (byte)red, (byte)green, (byte)blue));
             }
         } else {
             for (int i = 0; i < num_devices; i++) {
                 char* color = argv[2];
-                set_light_color(color, i);
+                log_succeeded(set_light_color(color, i));
             }
         }
     }
@@ -227,20 +234,20 @@ int main(int argc, char *argv[]) {
         int device_index = atoi(argv[1]);
         if (device_index >= 0 && device_index < num_devices) {
             if (strcmp(argv[2], "reset") == 0) {
-                ResetLight(device_index);
+                log_succeeded(ResetLight(device_index));
             } else if (strcmp(argv[2], "flash") == 0) {
                 if (argc != 4) {
                     printf("Missing speed:\n");
                     printf("  flash <speed> - Flash the light at a speed (low, medium, high, pulse)\n");
                     return 1;
                 }
-                flash_light(device_index, argv[3]);
+                log_succeeded(flash_light(device_index, argv[3]));
             } else if (strcmp(argv[2], "stop_flash") == 0) {
-                StopLightFlash(device_index);
+                log_succeeded(StopLightFlash(device_index));
             } else if (strcmp(argv[2], "dim") == 0) {
-				SetLightDim(device_index);
+				log_succeeded(SetLightDim(device_index));
             } else if (strcmp(argv[2], "clear_dim") == 0) {
-                ClearLightDim(device_index);
+                log_succeeded(ClearLightDim(device_index));
             } else if (strcmp(argv[2], "music") == 0) {
                 if (argc != 4) {
                     printf("Missing number:\n");
@@ -248,14 +255,15 @@ int main(int argc, char *argv[]) {
                     return 1;
                 }
                 int music_number = atoi(argv[3]);
-                SelectMusicToPlay(device_index, (byte)music_number);
-                StartMusicPlay(device_index);
+                bool cmdA = SelectMusicToPlay(device_index, (byte)music_number);
+                bool cmdB = StartMusicPlay(device_index);
+                log_succeeded(cmdA && cmdB);
             } else if (strcmp(argv[2], "stop_music") == 0) {
-                StopMusicPlay(device_index);
+                log_succeeded(StopMusicPlay(device_index));
             } else if (strcmp(argv[2], "repeat") == 0) {
-                SetMusicRepeat(device_index);
+                log_succeeded(SetMusicRepeat(device_index));
             } else if (strcmp(argv[2], "clear_repeat") == 0) {
-                ClearMusicRepeat(device_index);
+                log_succeeded(ClearMusicRepeat(device_index));
             } else if (strcmp(argv[2], "volume") == 0) {
                 if (argc != 4) {
                     printf("Missing level:\n");
@@ -263,11 +271,11 @@ int main(int argc, char *argv[]) {
                     return 1;
                 }
                 int volume_level = atoi(argv[3]);
-                SetMusicVolume(device_index, (byte)volume_level);
+                log_succeeded(SetMusicVolume(device_index, (byte)volume_level));
             } else if (strcmp(argv[2], "mute") == 0) {
-                SetVolumeMute(device_index);
+                log_succeeded(SetVolumeMute(device_index));
             } else if (strcmp(argv[2], "unmute") == 0) {
-                ClearVolumeMute(device_index);
+                log_succeeded(ClearVolumeMute(device_index));
             } else if (strcmp(argv[2], "info") == 0) {
                 printf("Device %d:\n", device_index);
                 printf("  Unique ID: %u\n", GetDeviceUniqueId(device_index));
@@ -282,9 +290,9 @@ int main(int argc, char *argv[]) {
                 int red = atoi(argv[3]);
                 int green = atoi(argv[4]);
                 int blue = atoi(argv[5]);
-                TurnOnRGBLights(device_index, (byte)red, (byte)green, (byte)blue);
+                log_succeeded(TurnOnRGBLights(device_index, (byte)red, (byte)green, (byte)blue));
             } else {
-                set_light_color(argv[2], device_index);
+                log_succeeded(set_light_color(argv[2], device_index));
             }
         } else {
             printf("Invalid device index: %d\n", device_index);
