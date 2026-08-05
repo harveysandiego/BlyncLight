@@ -83,16 +83,21 @@ bool set_light_color(const char *color, int device_index) {
 
 // Function to flash the light at a specific speed
 bool flash_light(int device_index, const char *speed) {
+    byte flash_speed;
     if (strcmp(speed, "low") == 0) {
-        return SelectLightFlashSpeed(device_index, 0x01);
+        flash_speed = 0x01;
     } else if (strcmp(speed, "medium") == 0) {
-        return SelectLightFlashSpeed(device_index, 0x02);
+        flash_speed = 0x02;
     } else if (strcmp(speed, "high") == 0) {
-        return SelectLightFlashSpeed(device_index, 0x03);
+        flash_speed = 0x03;
     } else if (strcmp(speed, "pulse") == 0) {
-        return SelectLightFlashSpeed(device_index, 0x04);
+        flash_speed = 0x04;
     } else {
         printf("Unknown flash speed: %s\n", speed);
+        return false;
+    }
+
+    if (!SelectLightFlashSpeed(device_index, flash_speed)) {
         return false;
     }
     return StartLightFlash(device_index);
