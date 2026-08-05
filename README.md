@@ -1,5 +1,9 @@
 # README
 
+[![C/C++ CI](https://github.com/harveysandiego/BlyncLight/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/harveysandiego/BlyncLight/actions/workflows/c-cpp.yml)
+[![Release](https://img.shields.io/github/v/release/harveysandiego/BlyncLight)](https://github.com/harveysandiego/BlyncLight/releases/latest)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Command line utility for controlling Embrava BlyncLights on Linux.
 
 ## Build
